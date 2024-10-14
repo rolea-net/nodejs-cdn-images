@@ -26,6 +26,15 @@ class MemoryCache {
         return null;
     }
 
+    del(key: string): boolean {
+        if (this.cache[key]) {
+            delete this.cache[key];
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     preloadImages(directory: string) {
         const files = fs.readdirSync(directory);
         for (const file of files) {

@@ -41,6 +41,30 @@ const serveImage = async (req: Request, res: Response) => {
     }
 };
 
+const deleteImage = async (req: Request, res: Response) => {
+    const imageKey = req.params.imageName;
+
+    try {
+        const imagePath = path.join(__dirname, '../../uploads/', imageKey);
+
+        if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
+
+            memoryCache.del(imageKey);
+
+            res.status(200).send('Image deleted successfully');
+            return;
+        } else {
+            res.status(404).send('Image not found');
+            return;
+        }
+    } catch (error) {
+        console.error('Error while deleting image:', error);
+        res.status(500).send('Server error');
+        return;
+    }
+};
+
 router.post('/upload', upload.single('image'), async (req: Request, res: Response) => {
     try {
         const file = req.file;
@@ -62,5 +86,6 @@ router.post('/upload', upload.single('image'), async (req: Request, res: Respons
 });
 
 router.get('/:imageName', serveImage);
+router.delete('/:imageName', deleteImage);
 
 export default router;
